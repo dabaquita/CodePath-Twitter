@@ -50,6 +50,10 @@ class LoginViewController: UIViewController {
             success: {
                 let homeVC = HomeViewController()
                 let navToHomeController = UINavigationController(rootViewController: homeVC)
+                navToHomeController.modalPresentationStyle = .fullScreen
+                navToHomeController.navigationBar.isTranslucent = false
+                navToHomeController.navigationBar.barTintColor = Colors.blue
+                navToHomeController.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
                 self.show(navToHomeController, sender: self)
             },
             failure: { error in
