@@ -17,10 +17,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.windowScene = windowScene
         
         // Creating View Hierarchy
-        let homeVC = HomeViewController()
+        let loginVC = LoginViewController()
         
         // Setting root and window
-        window?.rootViewController = homeVC
+        window?.rootViewController = loginVC
         window?.makeKeyAndVisible()
     }
 
