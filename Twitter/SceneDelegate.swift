@@ -17,13 +17,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.windowScene = windowScene
         
         // Creating View Hierarchy
-        let random = UIViewController()
-        random.view.backgroundColor = .white
-        let navController = UINavigationController(rootViewController: random)
-        print("Hello world")
+        let homeVC = HomeViewController()
         
         // Setting root and window
-        window?.rootViewController = navController
+        window?.rootViewController = homeVC
         window?.makeKeyAndVisible()
     }
 
