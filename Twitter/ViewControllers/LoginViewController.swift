@@ -10,21 +10,51 @@ import UIKit
 
 class LoginViewController: UIViewController {
 
+    let loginButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Login", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = ButtonLayout.largeButtonFont
+        button.backgroundColor = Colors.blue
+        button.clipsToBounds = true
+        button.layer.cornerRadius = ButtonLayout.roundedCornerRadius
+        button.addTarget(self, action: #selector(didTapOnLogin), for: .touchUpInside)
+        return button
+    }()
+    
+    let loginURL = "https://api.twitter.com/oauth/request_token"
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
+        
+        setupLoginButton()
+    }
 
-        // Do any additional setup after loading the view.
+    func setupLoginButton() {
+        view.addSubview(loginButton)
+        
+        // Constraints
+        loginButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            loginButton.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/12),
+            loginButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.4),
+            loginButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @objc func didTapOnLogin(_ sender: UIButton) {
+        TwitterAPICaller.client?.login(
+            url: loginURL,
+            success: {
+                let homeVC = HomeViewController()
+                let navToHomeController = UINavigationController(rootViewController: homeVC)
+                self.show(navToHomeController, sender: self)
+            },
+            failure: { error in
+                print("Can't log in due to \(error)")
+            }
+        )
     }
-    */
-
 }
