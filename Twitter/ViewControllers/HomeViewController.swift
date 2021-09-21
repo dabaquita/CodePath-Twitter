@@ -11,11 +11,15 @@ import UIKit
 class HomeViewController: UITableViewController {
     
     var tweetDict = [NSDictionary]()
-    var numOfTweets: Int!
     let customRefreshControl = UIRefreshControl()
+    
+    var numOfTweets = 10
+    let getHomeTimelineURL = "https://api.twitter.com/1.1/statuses/home_timeline.json"
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Load Navigation Bar
         self.navigationItem.title = "Home"
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(
             title: "Logout",
@@ -27,6 +31,8 @@ class HomeViewController: UITableViewController {
             [.foregroundColor: UIColor.white],
             for: .normal
         )
+        
+        // Load TableView and RefreshControl
         tableView.register(TweetCell.self, forCellReuseIdentifier: TweetCell.identifier)
         loadTweets()
         
@@ -41,8 +47,7 @@ class HomeViewController: UITableViewController {
     }
     
     @objc func loadTweets() {
-        let getHomeTimelineURL = "https://api.twitter.com/1.1/statuses/home_timeline.json"
-        let loadTweetParams = ["count" : 10]
+        let loadTweetParams = ["count" : numOfTweets]
         
         TwitterAPICaller.client?.getDictionariesRequest(
             url: getHomeTimelineURL,
@@ -54,6 +59,26 @@ class HomeViewController: UITableViewController {
                 }
                 self.tableView.reloadData()
                 self.refreshControl?.endRefreshing()
+            },
+            failure: { error in
+                print("Could not retrieve tweets due to \(error)")
+            }
+        )
+    }
+    
+    @objc func loadMoreTweets() {
+        numOfTweets += 10
+        let loadTweetParams = ["count" : numOfTweets]
+        
+        TwitterAPICaller.client?.getDictionariesRequest(
+            url: getHomeTimelineURL,
+            parameters: loadTweetParams,
+            success: { tweets in
+                self.tweetDict.removeAll()
+                for tweet in tweets {
+                    self.tweetDict.append(tweet)
+                }
+                self.tableView.reloadData()
             },
             failure: { error in
                 print("Could not retrieve tweets due to \(error)")
@@ -115,5 +140,11 @@ class HomeViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return view.bounds.height / 8
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row + 1 == tweetDict.count {
+            loadMoreTweets()
+        }
     }
 }
