@@ -12,6 +12,7 @@ class HomeViewController: UITableViewController {
     
     var tweetDict = [NSDictionary]()
     var numOfTweets: Int!
+    let customRefreshControl = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +29,9 @@ class HomeViewController: UITableViewController {
         )
         tableView.register(TweetCell.self, forCellReuseIdentifier: TweetCell.identifier)
         loadTweets()
+        
+        customRefreshControl.addTarget(self, action: #selector(loadTweets), for: .valueChanged)
+        tableView.refreshControl = customRefreshControl
     }
     
     @objc func didTapLogout(_ sender: Any) {
@@ -36,7 +40,7 @@ class HomeViewController: UITableViewController {
         self.dismiss(animated: true)
     }
     
-    private func loadTweets() {
+    @objc func loadTweets() {
         let getHomeTimelineURL = "https://api.twitter.com/1.1/statuses/home_timeline.json"
         let loadTweetParams = ["count" : 10]
         
@@ -49,6 +53,7 @@ class HomeViewController: UITableViewController {
                     self.tweetDict.append(tweet)
                 }
                 self.tableView.reloadData()
+                self.refreshControl?.endRefreshing()
             },
             failure: { error in
                 print("Could not retrieve tweets due to \(error)")
