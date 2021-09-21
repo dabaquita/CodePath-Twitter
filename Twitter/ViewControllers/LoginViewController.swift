@@ -18,17 +18,25 @@ class LoginViewController: UIViewController {
         button.backgroundColor = Colors.blue
         button.clipsToBounds = true
         button.layer.cornerRadius = ButtonLayout.roundedCornerRadius
-        button.addTarget(self, action: #selector(didTapOnLogin), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapLogin), for: .touchUpInside)
         return button
     }()
     
     let loginURL = "https://api.twitter.com/oauth/request_token"
+    let userLoggedInKey = "userLoggedIn"
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         
         setupLoginButton()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if UserDefaults.standard.bool(forKey: userLoggedInKey) {
+            self.navigateToHome()
+        }
     }
 
     func setupLoginButton() {
@@ -44,21 +52,27 @@ class LoginViewController: UIViewController {
         ])
     }
     
-    @objc func didTapOnLogin(_ sender: UIButton) {
+    @objc func didTapLogin(_ sender: UIButton) {
         TwitterAPICaller.client?.login(
             url: loginURL,
-            success: {
-                let homeVC = HomeViewController()
-                let navToHomeController = UINavigationController(rootViewController: homeVC)
-                navToHomeController.modalPresentationStyle = .fullScreen
-                navToHomeController.navigationBar.isTranslucent = false
-                navToHomeController.navigationBar.barTintColor = Colors.blue
-                navToHomeController.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
-                self.show(navToHomeController, sender: self)
+            success: { [weak self] in
+                guard let self = self else { return }
+                UserDefaults.standard.setValue(true, forKey: self.userLoggedInKey)
+                self.navigateToHome()
             },
             failure: { error in
                 print("Can't log in due to \(error)")
             }
         )
+    }
+    
+    private func navigateToHome() {
+        let homeVC = HomeViewController()
+        let navToHomeController = UINavigationController(rootViewController: homeVC)
+        navToHomeController.modalPresentationStyle = .fullScreen
+        navToHomeController.navigationBar.isTranslucent = false
+        navToHomeController.navigationBar.barTintColor = Colors.blue
+        navToHomeController.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
+        self.show(navToHomeController, sender: self)
     }
 }
