@@ -31,6 +31,17 @@ class HomeViewController: UITableViewController {
             [.foregroundColor: UIColor.white],
             for: .normal
         )
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "Tweet",
+            style: .plain,
+            target: self,
+            action: #selector(didTapNewTweet)
+        )
+        self.navigationItem.rightBarButtonItem?.setTitleTextAttributes(
+            [.foregroundColor: UIColor.white],
+            for: .normal
+        )
+        
         
         // Load TableView and RefreshControl
         tableView.register(TweetCell.self, forCellReuseIdentifier: TweetCell.identifier)
@@ -44,6 +55,10 @@ class HomeViewController: UITableViewController {
         TwitterAPICaller.client?.logout()
         UserDefaults.standard.setValue(false, forKey: "userLoggedIn")
         self.dismiss(animated: true)
+    }
+    
+    @objc func didTapNewTweet(_ sender: Any) {
+        print("hello world")
     }
     
     @objc func loadTweets() {
@@ -79,6 +94,7 @@ class HomeViewController: UITableViewController {
                     self.tweetDict.append(tweet)
                 }
                 self.tableView.reloadData()
+                self.refreshControl?.endRefreshing()
             },
             failure: { error in
                 print("Could not retrieve tweets due to \(error)")
