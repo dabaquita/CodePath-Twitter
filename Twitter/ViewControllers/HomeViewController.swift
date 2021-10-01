@@ -42,13 +42,16 @@ class HomeViewController: UITableViewController {
             for: .normal
         )
         
+        customRefreshControl.addTarget(self, action: #selector(loadTweets), for: .valueChanged)
+        tableView.refreshControl = customRefreshControl
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
         // Load TableView and RefreshControl
         tableView.register(TweetCell.self, forCellReuseIdentifier: TweetCell.identifier)
         loadTweets()
-        
-        customRefreshControl.addTarget(self, action: #selector(loadTweets), for: .valueChanged)
-        tableView.refreshControl = customRefreshControl
     }
     
     @objc func didTapLogout(_ sender: Any) {

@@ -11,6 +11,7 @@ import UIKit
 class CreateTweetViewController: UIViewController {
     
     let tweetTextView = UITextView()
+    let placeholderText = "New Tweet..."
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,19 +45,32 @@ class CreateTweetViewController: UIViewController {
 
     @objc func didTapCancel(_ sender: Any?) {
         self.dismiss(animated: true)
-        print("Tapped Cancel")
     }
     
     @objc func didTapTweet(_ sender: Any?) {
-        print("Tapped Tweet")
+        if !tweetTextView.text.isEmpty && tweetTextView.text != placeholderText {
+            TwitterAPICaller.client?.postTweet(
+                tweetString: tweetTextView.text,
+                success: {
+                    self.dismiss(animated: true, completion: nil)
+                },
+                failure: { error in
+                    print("Error posting tweet due to \(error)")
+                    self.dismiss(animated: true, completion: nil)
+                }
+            )
+        } else {
+            self.dismiss(animated: true, completion: nil)
+        }
     }
     
     // Format subviews
     func configureTweetTextView() {
         tweetTextView.delegate = self
-        tweetTextView.text = "New Tweet..."
+        tweetTextView.text = placeholderText
         tweetTextView.textColor = UIColor.lightGray
         tweetTextView.font = .systemFont(ofSize: 17)
+        tweetTextView.becomeFirstResponder()
         view.addSubview(tweetTextView)
         
         // Constraints
@@ -79,7 +93,7 @@ extension CreateTweetViewController: UITextViewDelegate {
         
         // Add placeholder and set cursor to beginning of text view
         if updatedText.isEmpty {
-            textView.text = "New Tweet..."
+            textView.text = placeholderText
             textView.textColor = UIColor.lightGray
             
             textView.selectedTextRange = textView.textRange(
