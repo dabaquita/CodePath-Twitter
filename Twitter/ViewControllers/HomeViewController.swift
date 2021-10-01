@@ -58,7 +58,13 @@ class HomeViewController: UITableViewController {
     }
     
     @objc func didTapNewTweet(_ sender: Any) {
-        print("hello world")
+        let createTweetVC = CreateTweetViewController()
+        let navToCreateTweetController = UINavigationController(rootViewController: createTweetVC)
+        navToCreateTweetController.modalPresentationStyle = .pageSheet
+        navToCreateTweetController.navigationBar.isTranslucent = false
+        navToCreateTweetController.navigationBar.barTintColor = Colors.blue
+        navToCreateTweetController.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.white]
+        self.show(navToCreateTweetController, sender: self)
     }
     
     @objc func loadTweets() {
