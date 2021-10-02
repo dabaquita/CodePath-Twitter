@@ -159,6 +159,16 @@ class HomeViewController: UITableViewController {
             cell.profileImageView.image = UIImage(data: imageData)
         }
         
+        // Favorite
+        if let isFavorited = tweet["favorited"] as? Bool {
+            cell.isFavorited = isFavorited
+        }
+        
+        // Tweet Id
+        if let tweetId = tweet["id"] as? Int {
+            cell.tweetId = tweetId
+        }
+        
         return cell
     }
     

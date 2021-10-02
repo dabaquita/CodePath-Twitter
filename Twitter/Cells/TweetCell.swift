@@ -11,6 +11,8 @@ import UIKit
 class TweetCell: UITableViewCell {
     
     static let identifier = "TweetCell"
+    
+    // Subview properties
     let profileImageView = UIImageView()
     var profileNameLabel = UILabel()
     var tweetLabel = UILabel()
@@ -21,6 +23,10 @@ class TweetCell: UITableViewCell {
     private let replyButton = UIButton()
     private let retweetButton = UIButton()
     private let favoriteButton = UIButton()
+    
+    // Usage properties
+    var isFavorited: Bool = false
+    var tweetId: Int = -1
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -58,8 +64,9 @@ class TweetCell: UITableViewCell {
         
         // Stackview setup
         stackView.axis = .vertical
-        stackView.distribution = .fillProportionally
-        stackView.spacing = 10
+        stackView.distribution = .equalCentering
+        stackView.alignment = .fill
+        stackView.spacing = 7
         
         contentView.addSubview(stackView)
         stackView.addArrangedSubview(profileNameLabel)
@@ -78,12 +85,12 @@ class TweetCell: UITableViewCell {
     
     private func configureProfileNameLabel() {
         profileNameLabel.numberOfLines = 1
-        profileNameLabel.font = .boldSystemFont(ofSize: 15)
+        profileNameLabel.font = .boldSystemFont(ofSize: 14)
     }
     
     private func configureTweetLabel() {
         tweetLabel.numberOfLines = 0
-        tweetLabel.font = .systemFont(ofSize: 15)
+        tweetLabel.font = .systemFont(ofSize: 12)
     }
     
     private func configureButtonStackView() {
@@ -121,7 +128,9 @@ class TweetCell: UITableViewCell {
     }
     
     private func configureFavoriteButton() {
+        favoriteButton.isSelected = isFavorited
         favoriteButton.setBackgroundImage(UIImage(named: "favor-icon"), for: .normal)
+        favoriteButton.setBackgroundImage(UIImage(named: "favor-icon-red"), for: .selected)
         favoriteButton.addTarget(
             self,
             action: #selector(didTapFavoriteButton),
@@ -139,6 +148,32 @@ class TweetCell: UITableViewCell {
     }
     
     @objc func didTapFavoriteButton(_ sender: Any) {
-        print("Tapped Favorite")
+        let toBeFavorited = !isFavorited
+        
+        if toBeFavorited {
+            TwitterAPICaller.client?.favoriteTweet(
+                tweetId: tweetId,
+                success: { [weak self] in
+                    guard let self = self else { return }
+                    self.favoriteButton.isSelected.toggle()
+                    self.isFavorited.toggle()
+                },
+                failure: { error in
+                    print("Could not favorite tweet due to \(error)")
+                }
+            )
+        } else {
+            TwitterAPICaller.client?.unfavoriteTweet(
+                tweetId: tweetId,
+                success: { [weak self] in
+                    guard let self = self else { return }
+                    self.favoriteButton.isSelected.toggle()
+                    self.isFavorited.toggle()
+                },
+                failure: { error in
+                    print("Could not unfavorite tweet due to \(error)")
+                }
+            )
+        }
     }
 }
