@@ -162,7 +162,17 @@ class TweetCell: UITableViewCell {
                 }
             )
         } else {
-            // Implement unretweet
+            TwitterAPICaller.client?.unretweetTweet(
+                tweetId: tweetId,
+                success: { [weak self] in
+                    guard let self = self else { return }
+                    self.retweetButton.isSelected.toggle()
+                    self.isRetweeted.toggle()
+                },
+                failure: { error in
+                    print("Could not unretweet tweet due to \(error)")
+                }
+            )
         }
     }
     
