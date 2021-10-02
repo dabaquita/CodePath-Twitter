@@ -16,6 +16,11 @@ class TweetCell: UITableViewCell {
     var tweetLabel = UILabel()
     
     private let stackView = UIStackView()
+    
+    private let buttonStackView = UIStackView()
+    private let replyButton = UIButton()
+    private let retweetButton = UIButton()
+    private let favoriteButton = UIButton()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -49,6 +54,7 @@ class TweetCell: UITableViewCell {
         // Subviews setup
         configureProfileNameLabel()
         configureTweetLabel()
+        configureButtonStackView()
         
         // Stackview setup
         stackView.axis = .vertical
@@ -58,6 +64,7 @@ class TweetCell: UITableViewCell {
         contentView.addSubview(stackView)
         stackView.addArrangedSubview(profileNameLabel)
         stackView.addArrangedSubview(tweetLabel)
+        stackView.addArrangedSubview(buttonStackView)
         
         // Constraints
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -77,5 +84,61 @@ class TweetCell: UITableViewCell {
     private func configureTweetLabel() {
         tweetLabel.numberOfLines = 0
         tweetLabel.font = .systemFont(ofSize: 15)
+    }
+    
+    private func configureButtonStackView() {
+        // Subviews setup
+        configureReplyButton()
+        configureRetweetButton()
+        configureFavoriteButton()
+        
+        // Stackview setup
+        buttonStackView.axis = .horizontal
+        buttonStackView.distribution = .equalSpacing
+        buttonStackView.alignment = .center
+        
+        buttonStackView.addArrangedSubview(replyButton)
+        buttonStackView.addArrangedSubview(retweetButton)
+        buttonStackView.addArrangedSubview(favoriteButton)
+    }
+    
+    private func configureReplyButton() {
+        replyButton.setBackgroundImage(UIImage(named: "reply-icon"), for: .normal)
+        replyButton.addTarget(
+            self,
+            action: #selector(didTapReplyButton),
+            for: .touchUpInside
+        )
+    }
+    
+    private func configureRetweetButton() {
+        retweetButton.setBackgroundImage(UIImage(named: "retweet-icon"), for: .normal)
+        retweetButton.addTarget(
+            self,
+            action: #selector(didTapRetweetButton),
+            for: .touchUpInside
+        )
+    }
+    
+    private func configureFavoriteButton() {
+        favoriteButton.setBackgroundImage(UIImage(named: "favor-icon"), for: .normal)
+        favoriteButton.addTarget(
+            self,
+            action: #selector(didTapFavoriteButton),
+            for: .touchUpInside
+        )
+    }
+    
+    // MARK: Tap Handlers
+    @objc func didTapReplyButton(_ sender: Any) {
+        print("Tapped Reply")
+    }
+    
+    @objc func didTapRetweetButton(_ sender: Any) {
+        print("Tapped Retweet")
+    }
+    
+    @objc func didTapFavoriteButton(_ sender: Any) {
+        print("Tapped Favorite")
     }
 }
