@@ -26,6 +26,7 @@ class TweetCell: UITableViewCell {
     
     // Usage properties
     var isFavorited: Bool = false
+    var isRetweeted: Bool = false
     var tweetId: Int = -1
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -119,7 +120,9 @@ class TweetCell: UITableViewCell {
     }
     
     private func configureRetweetButton() {
+        retweetButton.isSelected = isRetweeted
         retweetButton.setBackgroundImage(UIImage(named: "retweet-icon"), for: .normal)
+        retweetButton.setBackgroundImage(UIImage(named: "retweet-icon-green"), for: .selected)
         retweetButton.addTarget(
             self,
             action: #selector(didTapRetweetButton),
@@ -144,7 +147,23 @@ class TweetCell: UITableViewCell {
     }
     
     @objc func didTapRetweetButton(_ sender: Any) {
-        print("Tapped Retweet")
+        let toBeRetweeted = !isRetweeted
+        
+        if toBeRetweeted {
+            TwitterAPICaller.client?.retweetTweet(
+                tweetId: tweetId,
+                success: { [weak self] in
+                    guard let self = self else { return }
+                    self.retweetButton.isSelected.toggle()
+                    self.isRetweeted.toggle()
+                },
+                failure: { error in
+                    print("Could not retweet tweet due to \(error)")
+                }
+            )
+        } else {
+            // Implement unretweet
+        }
     }
     
     @objc func didTapFavoriteButton(_ sender: Any) {

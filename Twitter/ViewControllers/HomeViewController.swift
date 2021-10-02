@@ -164,6 +164,10 @@ class HomeViewController: UITableViewController {
             cell.isFavorited = isFavorited
         }
         
+        if let isRetweeted = tweet["retweeted"] as? Bool {
+            cell.isRetweeted = isRetweeted
+        }
+        
         // Tweet Id
         if let tweetId = tweet["id"] as? Int {
             cell.tweetId = tweetId
